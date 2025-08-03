@@ -4,9 +4,25 @@ import argparse
 import webbrowser
 import time
 
+ffmpeg = False
+ffprobe = False
+
 parser = argparse.ArgumentParser(description="Hi")
 parser.add_argument("url", type=str, default='N/A', help="The link to the video (or sound) you'd like to download", nargs=1)
 
+curdir = os.listdir()
+for stuff in curdir:
+    if stuff.startswith('ffmpeg'):
+        ffmpeg = True
+    if stuff.startswith('ffprobe'):
+        ffprobe = True
+
+if ffmpeg == False or ffprobe == False:
+    if ffmpeg == False:
+        print("ffmpeg is not found in the current directory, please install!")
+    if ffprobe == False:
+        print("ffprobe is not found in the current directory, please install!")
+    exit()
 
 args = parser.parse_args()
 url = args.url
