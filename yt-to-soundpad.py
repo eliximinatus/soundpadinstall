@@ -3,6 +3,7 @@ import yt_dlp
 import argparse
 import webbrowser
 import time
+import subprocess
 
 ffmpeg = False
 ffprobe = False
@@ -36,7 +37,8 @@ if url ==  "N/A":
 def download_video(link):
     ytopt = {
         'outtmpl': f'./SOUNDPADINSTALL.%(title)s.%(ext)s',
-        'format': 'bestaudio',
+        'youtube:player_client':'tv_embedded',
+        #'format': 'bestaudio',
         'quiet': True,          
         "postprocessors": [
             {
@@ -61,7 +63,13 @@ download_video(url)
 
 dir = os.listdir()
 
+
+
+
 deathmark = []
+
+# wait for ffmpeg conversion
+time.sleep(5)
 
 for file in dir:
     if file.startswith('SOUNDPADINSTALL.'):
@@ -70,10 +78,20 @@ for file in dir:
         print(f'Found {file}')
         deathmark.append(file.removeprefix('SOUNDPADINSTALL.'))
         
-for markedfordeath in deathmark:
-    webbrowser.open(f'soundpad://sound/url/https://localhost:45993/{markedfordeath}')
-    time.sleep(3)
-    os.remove(markedfordeath)
+try:
+    server = subprocess.Popen('python -m http.server 45993')
+    for markedfordeath in deathmark:
+        webbrowser.open(f'soundpad://sound/url/https://localhost:45993/{markedfordeath}')
+        time.sleep(3)
+        os.remove(markedfordeath)
+        # wait for soundpad import
+    time.sleep(5)
+finally:
+    server.kill()
+
+
+
+
 
 print('Done!')
 print('Exiting...')
